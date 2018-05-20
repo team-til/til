@@ -2,10 +2,15 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"net"
 	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	pb "github.com/team-til/til/server/_proto"
+	"github.com/team-til/til/server/service"
+	"google.golang.org/grpc"
 )
 
 var cfgFile string
@@ -42,7 +47,7 @@ func initConfig() {
 		viper.SetConfigFile(cfgFile)
 	} else {
 		viper.AddConfigPath("$GOPATH/src/github.com/team-til/til/server/")
-		viper.SetConfigName(".{{ .appName }}")
+		viper.SetConfigName(".til")
 	}
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err == nil {
@@ -51,5 +56,19 @@ func initConfig() {
 }
 
 func start(cmd *cobra.Command, args []string) {
-	fmt.Println("starting server")
+	s := grpc.NewServer()
+
+	ts := service.NewTILServer()
+	pb.RegisterTilServiceServer(s, ts)
+
+	listenAddr := fmt.Sprintf("localhost:%d", viper.GetInt("port"))
+	fmt.Println(listenAddr)
+	lis, err := net.Listen("tcp", listenAddr)
+	if err != nil {
+		log.Fatal("Couldn't create tcp listener. Err: %+v", err.Error())
+	}
+
+	if err := s.Serve(lis); err != nil {
+		log.Fatal("Failed to serve. Err: %+v", err.Error())
+	}
 }
