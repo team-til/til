@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	pb "github.com/team-til/til/server/_proto"
@@ -14,6 +16,7 @@ import (
 )
 
 var cfgFile string
+var log = logrus.StandardLogger()
 
 var rootCmd = &cobra.Command{
 	Use:   "til",
@@ -51,18 +54,26 @@ func initConfig() {
 	}
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		log.Info("Using config file:", viper.ConfigFileUsed())
 	}
 }
 
 func start(cmd *cobra.Command, args []string) {
-	s := grpc.NewServer()
+	logrusEntry := logrus.NewEntry(log)
+
+	s := grpc.NewServer(
+		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+			grpc_logrus.StreamServerInterceptor(logrusEntry),
+		)),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_logrus.UnaryServerInterceptor(logrusEntry),
+		)),
+	)
 
 	ts := service.NewTILServer()
 	pb.RegisterTilServiceServer(s, ts)
 
 	listenAddr := fmt.Sprintf("localhost:%d", viper.GetInt("port"))
-	fmt.Println(listenAddr)
 	lis, err := net.Listen("tcp", listenAddr)
 	if err != nil {
 		log.Fatal("Couldn't create tcp listener. Err: %+v", err.Error())
