@@ -36,8 +36,10 @@ export default {
   created() {
     axios.get('http://localhost:8080/ping')
     .then(response => {
-      console.log(response)
       this.apiResponse = response.data.response
+    })
+    .catch(error => {
+      this.apiResponse = "Unable to load"
     })
   }
 }
