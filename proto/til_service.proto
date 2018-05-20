@@ -1,9 +1,14 @@
 syntax = "proto3";
-
 package til;
 
+import "google/api/annotations.proto";
+
 service TilService {
-  rpc Ping(PingRequest) returns (PingResponse){}
+  rpc Ping(PingRequest) returns (PingResponse){
+    option (google.api.http) = {
+      get: "/ping"
+    };
+  }
 }
 
 message PingRequest {}
