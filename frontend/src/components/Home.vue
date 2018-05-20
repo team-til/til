@@ -1,23 +1,44 @@
 <template>
-  <section class="hero is-medium is-primary is-bold">
-    <div class="hero-body">
+  <div>
+    <section class="hero is-medium is-primary is-bold">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+            Team TIL - Today I Learned
+          </h1>
+          <h2 class="subtitle">
+            Share Knowledge Across Your Engineering Organization
+          </h2>
+        </div>
+      </div>
+    </section>
+    <section>
       <div class="container">
-        <h1 class="title">
-          Team TIL - Today I Learned
-        </h1>
-        <h2 class="subtitle">
-          Share Knowledge Across Your Engineering Organization
-        </h2>
-    </div>
+        <h3>{{ apiResponse }}</h3>
+      </div>
+    </section>
   </div>
-</section>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'Home',
   props: {
     msg: String
+  },
+  data() {
+    return {
+      apiResponse: ""
+    }
+  },
+  created() {
+    axios.get('http://localhost:8080/ping')
+    .then(response => {
+      console.log(response)
+      this.apiResponse = response.data.response
+    })
   }
 }
 </script>
