@@ -17,6 +17,13 @@ service TilService {
       body: "*"
     };
   }
+
+  rpc GetNotePreviews(GetNotePreviewsRequest) returns (GetNotePreviewsResponse) {
+    option (google.api.http) = {
+      post: "/notes",
+      body: "*"
+    };
+  }
 }
 
 message Note {
@@ -29,6 +36,21 @@ message Note {
   google.protobuf.Timestamp updated_at = 21;
 }
 
+message NotePreview {
+  int64 id = 1;
+  string name = 2;
+  string note_preview = 3;
+  string filename = 4;
+  
+  google.protobuf.Timestamp created_at = 20;
+  google.protobuf.Timestamp updated_at = 21;
+}
+
+message Pagination {
+  int64 page_number = 1;
+  int32 per_page = 2;
+}
+
 message PingRequest {}
 
 message PingResponse {
@@ -37,4 +59,14 @@ message PingResponse {
 
 message CreateNoteRequest {
   Note note = 1;
+}
+
+message GetNotePreviewsRequest {
+  Pagination pagination = 20;
+}
+
+message GetNotePreviewsResponse {
+  repeated NotePreview note_previews = 1;
+
+  Pagination pagination = 20;
 }
