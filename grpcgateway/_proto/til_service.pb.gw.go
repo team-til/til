@@ -50,11 +50,15 @@ func request_TilService_CreateNote_0(ctx context.Context, marshaler runtime.Mars
 
 }
 
+var (
+	filter_TilService_GetNotePreviews_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
+
 func request_TilService_GetNotePreviews_0(ctx context.Context, marshaler runtime.Marshaler, client TilServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetNotePreviewsRequest
 	var metadata runtime.ServerMetadata
 
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.URL.Query(), filter_TilService_GetNotePreviews_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -159,7 +163,7 @@ func RegisterTilServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("POST", pattern_TilService_GetNotePreviews_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_TilService_GetNotePreviews_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		if cn, ok := w.(http.CloseNotifier); ok {
@@ -196,7 +200,7 @@ var (
 
 	pattern_TilService_CreateNote_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"notes"}, ""))
 
-	pattern_TilService_GetNotePreviews_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"notes"}, ""))
+	pattern_TilService_GetNotePreviews_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"note_previews"}, ""))
 )
 
 var (

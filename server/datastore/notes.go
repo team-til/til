@@ -40,6 +40,28 @@ func (ds *NotesDatastore) Create(ndto *NoteDTO) (*NoteDTO, error) {
 	return &dto, nil
 }
 
+func (ds *NotesDatastore) GetNotePreviews(pageNum int, perPage int) ([]NoteDTO, error) {
+	var offset int
+	if pageNum == 1 {
+		offset = 0
+	} else {
+		offset = ((perPage * pageNum) - perPage)
+	}
+
+	var noteDTOs []NoteDTO
+
+	if err := ds.db.Select(&noteDTOs, sqlGetNotePreviews, offset, perPage); err != nil {
+		return nil, err
+	}
+	return noteDTOs, nil
+}
+
 var sqlCreateNote = `INSERT INTO notes (name, note, filename)
 VALUES (:name, :note, :filename)
 RETURNING id, name, note, filename, created_at, updated_at`
+
+var sqlGetNotePreviews = `SELECT id, name, note, filename, created_at, updated_at
+FROM notes
+ORDER BY created_at ASC
+OFFSET $1
+LIMIT $2`
