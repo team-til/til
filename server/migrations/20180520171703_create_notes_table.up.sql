@@ -1,5 +1,5 @@
 CREATE TABLE notes (
-    id bigint,
+    id BIGSERIAL,
     name varchar NOT NULL,
     note text NOT NULL,
     filename varchar NOT NULL,

@@ -7,10 +7,12 @@ import (
 
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	pb "github.com/team-til/til/server/_proto"
+	"github.com/team-til/til/server/datastore"
 	"github.com/team-til/til/server/service"
 	"google.golang.org/grpc"
 )
@@ -61,6 +63,19 @@ func initConfig() {
 func start(cmd *cobra.Command, args []string) {
 	logrusEntry := logrus.NewEntry(log)
 
+	var dbConfig DbConfig
+	viper.UnmarshalKey("datastore", &dbConfig)
+
+	connStr := dbConfig.BuildDbConnectionStr()
+
+	db, err := sqlx.Connect("postgres", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	notesDs := datastore.NewNotesDatastore(db)
+
 	s := grpc.NewServer(
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 			grpc_logrus.StreamServerInterceptor(logrusEntry),
@@ -70,7 +85,7 @@ func start(cmd *cobra.Command, args []string) {
 		)),
 	)
 
-	ts := service.NewTILServer()
+	ts := service.NewTILServer(notesDs)
 	pb.RegisterTilServiceServer(s, ts)
 
 	listenAddr := fmt.Sprintf("localhost:%d", viper.GetInt("port"))
