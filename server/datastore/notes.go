@@ -48,9 +48,11 @@ func (ds *NotesDatastore) GetNotePreviews(pageNum int, perPage int) ([]NoteDTO, 
 		offset = ((perPage * pageNum) - perPage)
 	}
 
+	limit := perPage + 1
+
 	var noteDTOs []NoteDTO
 
-	if err := ds.db.Select(&noteDTOs, sqlGetNotePreviews, offset, perPage); err != nil {
+	if err := ds.db.Select(&noteDTOs, sqlGetNotePreviews, offset, limit); err != nil {
 		return nil, err
 	}
 	return noteDTOs, nil

@@ -4,7 +4,6 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/apex/log"
 	pb "github.com/team-til/til/server/_proto"
 	"github.com/team-til/til/server/datastore"
 	"github.com/team-til/til/server/mapper"
@@ -62,18 +61,20 @@ func (ts *TILServer) GetNotePreviews(ctx context.Context, request *pb.GetNotePre
 		return nil, status.Errorf(codes.Internal, "Unable to GetNotePreviews. Err: %+v", err)
 	}
 
-	notePreviews := make([]*pb.NotePreview, len(noteDTOs))
+	fullPage := len(noteDTOs) == (perPage + 1)
+
+	var notePreviews []*pb.NotePreview
 
 	for i, noteDTO := range noteDTOs {
-		notePreviews[i] = mapper.ToNotePreview(&noteDTO)
+		if i < perPage {
+			notePreviews = append(notePreviews, mapper.ToNotePreview(&noteDTO))
+		}
 	}
 
-	fullPage := len(notePreviews) == perPage
 	responsePagination := pb.PaginationResponse{PerPage: int64(perPage), PageNumber: int64(pageNum), PagesRemaining: strconv.FormatBool(fullPage)}
 	response := pb.GetNotePreviewsResponse{}
 	response.NotePreviews = notePreviews
 	response.Pagination = &responsePagination
-	log.Infof("%+v\n", response)
 
 	return &response, nil
 }

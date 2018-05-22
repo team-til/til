@@ -88,7 +88,7 @@ func start(cmd *cobra.Command, args []string) {
 	ts := service.NewTILServer(notesDs)
 	pb.RegisterTilServiceServer(s, ts)
 
-	listenAddr := fmt.Sprintf("localhost:%d", viper.GetInt("port"))
+	listenAddr := fmt.Sprintf(":%d", viper.GetInt("port"))
 	lis, err := net.Listen("tcp", listenAddr)
 	if err != nil {
 		log.Fatal("Couldn't create tcp listener. Err: %+v", err.Error())
