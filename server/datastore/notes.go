@@ -64,6 +64,6 @@ RETURNING id, name, note, filename, created_at, updated_at`
 
 var sqlGetNotePreviews = `SELECT id, name, note, filename, created_at, updated_at
 FROM notes
-ORDER BY created_at ASC
+ORDER BY created_at DESC
 OFFSET $1
 LIMIT $2`
