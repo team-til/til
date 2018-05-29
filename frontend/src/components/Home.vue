@@ -1,15 +1,13 @@
 <template>
-  <v-app id="inspire">
+  <v-app id="inspire" class="grey lighten-4">
     <v-navigation-drawer
       v-model="drawer"
       fixed
       clipped
-      class="grey lighten-4"
       app
     >
       <v-list
         dense
-        class="grey lighten-4"
       >
         <template v-for="(item, i) in items">
           <v-layout
@@ -50,7 +48,7 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar color="amber" app absolute clipped-left>
+    <v-toolbar app color="teal">
       <v-toolbar-side-icon @click.native="drawer = !drawer"></v-toolbar-side-icon>
       <span class="title ml-3 mr-5">Team&nbsp;<span class="text">TIL</span></span>
       <v-text-field
@@ -62,13 +60,11 @@
       <v-spacer></v-spacer>
     </v-toolbar>
     <v-content>
-      <v-container fluid fill-height class="grey lighten-4 test">
+      <v-container fluid fill-height fill-width class="grey lighten-4 test">
         <v-layout justify-center align-top>
-          <v-flex shrink>
-            <div class="note-overview">
-              <NoteOverview/>
-            </div>
-          </v-flex>
+            <v-flex fluid fill-width class="recent-notes">
+              <RecentNotes/>
+            </v-flex>
         </v-layout>
       </v-container>
     </v-content>
@@ -76,7 +72,7 @@
 </template>
 
 <script>
-  import NoteOverview from './NoteOverview'
+  import RecentNotes from './RecentNotes'
 
   export default {
     data: () => ({
@@ -102,7 +98,7 @@
       source: String
     },
     components: {
-      NoteOverview
+      RecentNotes
     }
   }
 </script>

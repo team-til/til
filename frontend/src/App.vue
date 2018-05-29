@@ -16,4 +16,13 @@ export default {
 </script>
 
 <style lang="scss">
+.clearfix {
+  overflow: auto;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
 </style>
